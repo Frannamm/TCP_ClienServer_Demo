@@ -1,36 +1,45 @@
 # TCP Client-Server Demo
-
-A simple TCP client-server implementation in C using the sockets API. 
-This project demonstrates a basic connection between a client and server, 
-including socket creation, connecting, and receiving data.
+A simple TCP client-server implementation in C using the sockets API.
+This project demonstrates a TCP connection between a client and server,
+including socket creation, connecting, sending/receiving data, and handling
+multiple simultaneous clients using `fork()`.
 
 ## Files
-
-- `TCP_server.c` — Sets up a server socket, listens for incoming connections, 
-  and sends data to a connected client.
-- `TCP_client.c` — Connects to the server and receives the data sent.
+- `TCP_server.c` — Sets up a server socket, listens for incoming connections,
+  and forks a new child process to handle each connected client, allowing
+  multiple clients to connect at once.
+- `TCP_client.c` — Connects to the server (given an IP address and port) and
+  receives the data sent by the server.
+- `Makefile` — Builds both `server` and `client` binaries.
 
 ## How to Compile
-
 ```bash
-gcc TCP_server.c -o server
-gcc TCP_client.c -o client
+make
+```
+This builds two binaries: `server` and `client`.
+
+To remove the compiled binaries:
+```bash
+make clean
 ```
 
 ## How to Run
+Both programs take the server's IP address and port as command-line arguments.
 
 1. Start the server first:
 ```bash
-./server
+./server 127.0.0.1 5555
 ```
 
 2. In a separate terminal, run the client:
 ```bash
-./client
+./client 127.0.0.1 5555
 ```
 
-## Notes
+You can run multiple clients (in separate terminals) against the same
+running server to see the multi-client handling in action.
 
-This is a basic demonstration of TCP socket communication and can be 
-extended further (e.g. bidirectional messaging, handling multiple clients, 
-error handling improvements).
+## Notes
+This is a demonstration of TCP socket communication and multi-client
+handling via `fork()`. Possible extensions include: bidirectional
+messaging, per-client identification/logging, and more robust error handling.
