@@ -12,14 +12,15 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != 3) {
-        printf("Usage: %s <IP address> <port>\n", argv[0]);
+    if (argc != 4) {
+        printf("Usage: %s <IP address> <port> <Data>\n", argv[0]);
         exit(1);
     }
 
     char *ipAddress = argv[1];
     int port = atoi(argv[2]);
-
+    char *data = argv[3];
+    
     int clientSocket;
     struct sockaddr_in serverAddr;
     char buf[1024];
@@ -37,10 +38,17 @@ int main(int argc, char *argv[])
         exit(1);
     }
     printf("Connected To Server Successfully...\n");
+    printf("My Client ID (PID): %d\n", getpid());
+    
 
     memset(buf, '\0', sizeof(buf));
     recv(clientSocket, buf, 1024, 0);
     printf("Data Recieved: %s...\n", buf);
+    
+    send(clientSocket, data, strlen(data), 0);
+    printf("Data Sent: %s\n", data);
+    printf("Data Length: %zu\n", strlen(data));
+    
     printf("Closing Connection...\n");
 
     close(clientSocket);

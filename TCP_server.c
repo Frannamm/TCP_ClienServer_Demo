@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <signal.h>
+#include <stdbool.h>
 
 int main(int argc, char *argv[])
 {
@@ -68,9 +69,34 @@ int main(int argc, char *argv[])
     if (pid == 0) {
         // Child process: handles this client
         close(sockfd); // child doesn't need the listening socket
+        
+        printf("Client connected: IP = %s, Port = %d\n",
+        		inet_ntoa(newAddr.sin_addr),
+        		ntohs(newAddr.sin_port));
+        printf("Client ID (PID): %d\n", getpid());
 
         strcpy(buf, "HELLO FROM ME\n");
         send(newSocket, buf, strlen(buf), 0);
+        
+        bool connected = true;
+	while (connected) {
+	   int bytesReceived = recv(newSocket, buf, 1024, 0);
+ 	   if (bytesReceived == 0) {
+           	 printf("Client disconnected: IP = %s, Port = %d\n",
+                 		  inet_ntoa(newAddr.sin_addr),
+                		   ntohs(newAddr.sin_port));
+           	 connected = false;
+	    }else if (bytesReceived < 0) {
+           	 perror("recv error");
+           	 connected = false;
+	    }else {
+
+      	  	buf[bytesReceived] = '\0';  
+     		printf("Data Received: %s\n", buf);
+        	printf("Data Length: %d\n", bytesReceived);
+    		}
+	    	
+	}
 
         printf("Closing Connection for a client...\n");
         close(newSocket);
